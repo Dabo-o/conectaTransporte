@@ -1,9 +1,9 @@
-import { Menu } from "@/components/Menu";
 import { Button } from "@/components/Button";
-import QrCode from "../../assets/images/qrCode.png";
-import { Text, View, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { Menu } from "@/components/Menu";
 import Feather from "@expo/vector-icons/Feather";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTheme } from "react-native-paper";
+import QrCode from "../../assets/images/qrCode.png";
 
 export default function Home() {
   const { colors } = useTheme();

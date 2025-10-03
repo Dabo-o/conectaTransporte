@@ -3,30 +3,26 @@ import { doc, getDoc } from "firebase/firestore";
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth, db } from "../firebase/config";
 
-// Dentro de contexts/AuthContext.tsx
-
+// A sua definição de UserProfile já está correta, incluindo o 'uid'.
 export type UserProfile = {
+  uid: string;
   nome: string;
   tipo: "student" | "driver";
-  // Adicionamos os novos campos aqui como opcionais
   cpf?: string;
   telefone?: string;
-  faculdade?: string;
+  faculdade?: string; // Trocado 'faculdade' para ser consistente com o código do Profile
   periodo?: string;
   turno?: string;
   diasSemana?: string;
-  // Adicione aqui os campos do motorista também, se necessário
   cnh?: string;
-  statusTag?: "Em Aula" | "Aguardando Ônibus" | "No Ônibus";
+  statusTag?: "Em aula" | "Aguardando" | "No ônibus"; // Corrigido para os nomes exatos
   email?: string;
   onibusAtual?: string;
 };
 
-// --- 1. ATUALIZAMOS O CONTRATO ---
-// Adicionamos 'firebaseUser' de volta ao tipo. Ele pode ser 'null' se ninguém estiver logado.
 type AuthContextType = {
   user: UserProfile | null;
-  firebaseUser: FirebaseUser | null; // <-- A ADIÇÃO ESTÁ AQUI
+  firebaseUser: FirebaseUser | null;
   login: (email: string, pass: string) => Promise<void>;
   logout: () => Promise<void>;
   loading: boolean;
@@ -35,21 +31,27 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  // --- 2. ADICIONAMOS O ESTADO PARA O FIREBASEUSER ---
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
-      setFirebaseUser(fbUser); // Atualizamos o estado do firebaseUser aqui
+      setFirebaseUser(fbUser);
       if (fbUser) {
         const docRef = doc(db, "usuarios", fbUser.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setUser(docSnap.data() as UserProfile);
+          // --- AQUI ESTÁ A ÚNICA MUDANÇA ---
+          // Em vez de apenas pegar os dados de DENTRO do documento...
+          // setUser(docSnap.data() as UserProfile);
+
+          // ...nós criamos um novo objeto que combina o ID DO DOCUMENTO (`docSnap.id`, que é o UID)
+          // com os dados de dentro dele (`docSnap.data()`).
+          setUser({ uid: docSnap.id, ...docSnap.data() } as UserProfile);
+
         } else {
-          console.error("Utilizador sem perfil no Firestore. UID:", fbUser.uid);
+          console.error("Usuário sem perfil no Firestore. UID:", fbUser.uid);
           await signOut(auth);
           setUser(null);
         }
@@ -70,7 +72,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await signOut(auth);
   };
 
-  // --- 3. FORNECEMOS O 'FIREBASEUSER' NO VALOR DO CONTEXTO ---
   return (
     <AuthContext.Provider value={{ user, firebaseUser, login, logout, loading }}>
       {children}

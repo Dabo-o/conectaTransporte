@@ -1,3 +1,4 @@
+import { Menu } from "@/components/Menu";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/firebase/config";
 import { collection, doc, onSnapshot, query, updateDoc, where } from "firebase/firestore";
@@ -144,6 +145,7 @@ export default function Tag() {
           ))}
         </View>
       </View>
+      <Menu />
     </SafeAreaView>
   );
 }

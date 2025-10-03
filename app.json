@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "transporte",
+    "slug": "transporte",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon-light.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/icon-white.png",
+      "imageWidth": 200,
+      "resizeMode": "contain",
+      "backgroundColor": "#2E7D32"
+    }, 
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/icon-white.png",
+        "backgroundColor": "#2E7D32"
+      },
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/icon-light.png"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

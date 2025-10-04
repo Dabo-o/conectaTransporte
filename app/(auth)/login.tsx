@@ -1,3 +1,4 @@
+// Login.tsx
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { useAuth } from "@/contexts/AuthContext";
@@ -11,14 +12,15 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  View
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { useTheme } from "react-native-paper";
 
 export default function Login() {
-  const { login, loading } = useAuth(); // Pegamos o 'loading' do nosso contexto
+  const { login, loading } = useAuth();
   const { colors } = useTheme();
-  
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -33,10 +35,13 @@ export default function Login() {
 
     try {
       await login(email, password);
-      // O redirecionamento é feito pelo _layout.tsx!
     } catch (err) {
       console.error("Erro no login:", err);
-      if (err instanceof FirebaseError && (err.code === 'auth/invalid-credential' || err.code === 'auth/invalid-email')) {
+      if (
+        err instanceof FirebaseError &&
+        (err.code === "auth/invalid-credential" ||
+          err.code === "auth/invalid-email")
+      ) {
         setError("E-mail ou senha inválidos.");
       } else {
         setError("Ocorreu um erro. Tente novamente.");
@@ -62,10 +67,7 @@ export default function Login() {
           <Text style={[styles.title, { color: "#0B573E" }]}>TRANSPORTE</Text>
         </View>
 
-        <View>
-          <Text style={styles.subtitle}>Faça Login</Text>
-        </View>
-
+        <Text style={styles.subtitle}>Acesse sua conta</Text>
         <View style={styles.container_input}>
           <Input
             label="E-mail"
@@ -74,39 +76,87 @@ export default function Login() {
             value={email}
             keyboardType="email-address"
             autoCapitalize="none"
+            error={!!error}
           />
+
           <Input
             label="Senha"
             onValueChange={setPassword}
             placeholder="Senha"
             value={password}
             secureTextEntry
+            error={!!error}
           />
 
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
-          {loading && <ActivityIndicator size="small" style={{ marginVertical: 10 }} />}
+          {error ? (
+            <Text style={[styles.errorText, { color: colors.error }]}>
+              {error}
+            </Text>
+          ) : null}
 
-          <Text style={[styles.link, { color: colors.primary }]}>
-            Esqueceu a senha? clique aqui
-          </Text>
+          {loading && (
+            <ActivityIndicator size="small" style={{ marginVertical: 10 }} />
+          )}
 
-          <Button text="Entrar" onPress={handleLogin} disabled={loading} />
+          <TouchableOpacity
+            style={[styles.forgotWrapper, { marginTop: -12 }]}
+            onPress={() => console.log("Esqueceu a senha")}
+          >
+            <Text style={[styles.forgotText, { color: colors.primary }]}>
+              Esqueceu a senha? clique aqui
+            </Text>
+          </TouchableOpacity>
+
+          <View style={{ marginTop: 20 }}>
+            <Button text="Entrar" onPress={handleLogin} disabled={loading} />
+          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
 }
 
-// Seus estilos permanecem os mesmos, mas adicione o errorText
 const styles = StyleSheet.create({
-    container: { flex: 1 },
-    scrollContainer: { flexGrow: 1, marginTop: 50, padding: 30 },
-    container_logo: { alignItems: "center", marginBottom: 30 },
-    logo: { width: 166, height: 107, marginBottom: 15 },
-    title: { fontSize: 22, fontWeight: "bold" },
-    subtitle: { fontSize: 22, fontWeight: "500", textAlign: "center", marginBottom: 30 },
-    container_input: { gap: 15, width: "100%", maxWidth: 400, alignSelf: 'center' },
-    link: { textAlign: "right" },
-    errorText: { color: 'red', textAlign: 'center', marginBottom: 10 },
+  container: {
+    flex: 1,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    padding: 30,
+    marginTop: 60,
+  },
+  container_logo: {
+    alignItems: "center",
+    marginBottom: 45,
+  },
+  logo: {
+    width: 166,
+    height: 107,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+  },
+  subtitle: {
+    fontSize: 22,
+    fontWeight: "500",
+    textAlign: "center",
+    marginBottom: 45,
+  },
+  container_input: {
+    width: "100%",
+    maxWidth: 400,
+    alignSelf: "center",
+  },
+  forgotWrapper: {
+    alignSelf: "flex-end",
+  },
+  forgotText: {
+    fontWeight: "400",
+  },
+  errorText: {
+    textAlign: "left",
+    marginTop: -12,
+    marginBottom: 20,
+  },
 });
-

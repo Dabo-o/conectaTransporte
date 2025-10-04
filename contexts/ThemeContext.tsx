@@ -22,7 +22,7 @@ const CustomLightTheme = {
     primary: "#1D4F29",
     secondary: "#2E7D32",
     tertiary: "#A5D6A7",
-    background: "#F5F5F5",
+    background: "#F3F8F6",
     surface: "#ffffff",
     onPrimary: "#ffffff",
     onSecondary: "#ffffff",
